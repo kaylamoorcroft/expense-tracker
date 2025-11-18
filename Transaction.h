@@ -4,6 +4,7 @@
 
 using namespace std;
 
+/** Either an Income or Expense, with a date */
 class Transaction {
 private:
     time_t timestamp_;
@@ -11,12 +12,11 @@ private:
 public:
     Transaction();
     Transaction(int year, int month, int day);
-    // void input();
-    // void output();
     void setDate(int year, int month, int day);
     string getDateString();
 };
 
+/** Positive balance transaction */
 class Income : public Transaction {
 private:
     double amount_;
@@ -28,8 +28,10 @@ public:
     Income(int year, int month, int day) : Transaction(year, month, day) {}
     Income(int year, int month, int day, double amount) : Transaction(year, month, day) {}
     Income(int year, int month, int day, double amount, string source) : Transaction(year, month, day) {}
+    string getAmountString();
 };
 
+/** Negative balance transaction */
 class Expense : public Transaction {
 private:
     double amount_;
@@ -43,7 +45,8 @@ public:
     Expense(int year, int month, int day, double amount, string source) : Transaction(year, month, day) {}
 };
 
-class Spreadsheet { // 
+/** Collection of Transactions with supported operations */
+class Spreadsheet { 
 private:
     vector<Transaction> entries_; // vector is like a resizable array
 public:
