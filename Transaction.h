@@ -37,12 +37,12 @@ private:
     double amount_;
     string category_; // could change to enum
 public:
-    Expense() : Transaction() {}
-    Expense(double amount);
-    Expense(double amount, string category);
-    Expense(int year, int month, int day) : Transaction(year, month, day) {}
-    Expense(int year, int month, int day, double amount) : Transaction(year, month, day) {}
-    Expense(int year, int month, int day, double amount, string source) : Transaction(year, month, day) {}
+    Expense(double amount = 0, string category = "undefined");
+    Expense(int year, int month, int day, double amount = 0, string source = "undefined");
+    void setAmount(double amount);
+    void setCategory(string category);
+    string getAmountString();
+    void display() override;
 };
 
 /** Collection of Transactions with supported operations */

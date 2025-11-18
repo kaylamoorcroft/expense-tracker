@@ -51,22 +51,59 @@ void Income::setAmount(double amount) {
 void Income::setSource(string source) {
     source_ = source;
 }
+/** Get a string representation of income amount */
 string Income::getAmountString() {
     stringstream ss;
     ss.imbue(locale("en_CA.UTF-8"));
     ss << showbase << put_money(amount_ * 100); // amount in cents
     return ss.str();
 }
-
+/** Display the amount, date and source of the income */
 void Income::display() {
     cout << "Amount: " << getAmountString() << endl;
     cout << "Date: " << getDateString() << endl;
     cout << "Source: " << source_ << endl;
 }
 
+/** Create new expense of amount dollars from a set category with today's date 
+or a default value of $0 and category = "undefined"*/
+Expense::Expense(double amount, string category) : Transaction() {
+    amount_ = -amount;
+    category_ = category;
+}
+/** Create new expense of amount dollars from a set category with specified date 
+or a default value of $0 and category = "undefined"*/
+Expense::Expense(int year, int month, int day, double amount, string category) : Transaction(year, month, day) {
+    amount_ = -amount;
+    category_ = category;
+}
+/** Set expense amount in dollars */
+void Expense::setAmount(double amount) {
+    amount_ = -amount;
+}
+/** Set expense category */
+void Expense::setCategory(string category) {
+    category_ = category;
+}
+/** Get a string representation of expense amount */
+string Expense::getAmountString() {
+    stringstream ss;
+    ss.imbue(locale("en_CA.UTF-8"));
+    ss << showbase << put_money(amount_ * 100); // amount in cents
+    return ss.str();
+}
+/** Display the amount, date and category of the expense */
+void Expense::display() {
+    cout << "Amount: " << getAmountString() << endl;
+    cout << "Date: " << getDateString() << endl;
+    cout << "Category: " << category_ << endl;
+}
+
 // testing
 int main() {
     Income i(2020,5,3,50,"tutoring");
     i.display();
+    Expense e(2020,5,4, 30, "food");
+    e.display();
     return 0;
 }
