@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <iomanip> // https://en.cppreference.com/w/cpp/locale/money_put.html
 #include <locale>
 #include "Transaction.h"
@@ -30,9 +31,42 @@ string Transaction::getDateString() {
     return output;
 }
 
+/** Create new income of amount dollars from a set source with today's date 
+or a default value of $0 and source = "undefined"*/
+Income::Income(double amount, string source) : Transaction() {
+    amount_ = amount;
+    source_ = source;
+}
+/** Create new income of amount dollars from a set source with specified date 
+or a default value of $0 and source = "undefined"*/
+Income::Income(int year, int month, int day, double amount, string source) : Transaction(year, month, day) {
+    amount_ = amount;
+    source_ = source;
+}
+/** Set income amount in dollars */
+void Income::setAmount(double amount) {
+    amount_ = amount;
+}
+/** Set income source */
+void Income::setSource(string source) {
+    source_ = source;
+}
+string Income::getAmountString() {
+    stringstream ss;
+    ss.imbue(locale("en_CA.UTF-8"));
+    ss << showbase << put_money(amount_ * 100); // amount in cents
+    return ss.str();
+}
+
+void Income::display() {
+    cout << "Amount: " << getAmountString() << endl;
+    cout << "Date: " << getDateString() << endl;
+    cout << "Source: " << source_ << endl;
+}
+
 // testing
 int main() {
-    Transaction t(2020,10,5);
-    cout << t.getDateString() << endl;
+    Income i(2020,5,3,50,"tutoring");
+    i.display();
     return 0;
 }

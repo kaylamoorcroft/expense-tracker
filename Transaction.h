@@ -14,6 +14,7 @@ public:
     Transaction(int year, int month, int day);
     void setDate(int year, int month, int day);
     string getDateString();
+    virtual void display() = 0;
 };
 
 /** Positive balance transaction */
@@ -22,13 +23,12 @@ private:
     double amount_;
     string source_;
 public:
-    Income() : Transaction() {}
-    Income(double amount);
-    Income(double amount, string source);
-    Income(int year, int month, int day) : Transaction(year, month, day) {}
-    Income(int year, int month, int day, double amount) : Transaction(year, month, day) {}
-    Income(int year, int month, int day, double amount, string source) : Transaction(year, month, day) {}
+    Income(double amount = 0, string source = "undefined");
+    Income(int year, int month, int day, double amount = 0, string source = "undefined");
+    void setAmount(double amount);
+    void setSource(string source);
     string getAmountString();
+    void display() override;
 };
 
 /** Negative balance transaction */
