@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// main will include summary, import, export functions
+
 // testing
 int main() {
     Income i(2020,5,3,50,"tutoring");
