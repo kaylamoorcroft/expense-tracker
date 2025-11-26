@@ -3,19 +3,11 @@
 
 using namespace std;
 
-void Spreadsheet::test() {
-    cout << "test" << endl;
-}
-
-// add entry
+// create new entry
 bool Spreadsheet::addEntry(Transaction* entry) {
-    // Income i(2020,5,3,50,"tutoring");
-    // Expense e(2020,5,4, 40, "food");
-    //entries_.insert(&i);
-    // entries_.insert(&e)
     return entries_.insert(entry).second;
 }
-// delete entry
+// remove entry
 Transaction* Spreadsheet::deleteEntry() {
     Transaction* entry = getEntry();
     char option;
@@ -26,7 +18,7 @@ Transaction* Spreadsheet::deleteEntry() {
     }
     return nullptr;
 }
-// update entry
+// change entry info
 Transaction* Spreadsheet::updateEntry() {
     Transaction* entry = getEntry();
     cout << "Select what you want to edit:" << endl;
@@ -76,25 +68,33 @@ Transaction* Spreadsheet::getEntry() {
     }
     return nullptr;
 }
-// filter by date
+// filter by date and print
 set<Transaction*, greater<Transaction*>> Spreadsheet::printEntriesFromDate(int year, int month, int day) {
-    set<Transaction*, greater<Transaction*>> filtered;
+    set<Transaction*, greater<Transaction*>> filtered = filterMonth(year, month, day);
     int counter = 1;
+    for (Transaction* t : filtered) {
+        cout << "(" << counter << ") ";
+        t->display();
+        counter++;
+    }
+    return filtered;
+}
+
+// filter by date
+set<Transaction*, greater<Transaction*>> Spreadsheet::filterMonth(int year, int month, int day) {
+    set<Transaction*, greater<Transaction*>> filtered;
     for (Transaction* t : entries_) {
         if (t->datesAreEqual(year, month, day)) {
-            cout << "(" << counter << ") ";
-            t->display();
             filtered.insert(t);
-            counter++;
         }
     }
     return filtered;
 }
-// return entries
+/** get all entries */
 set<Transaction*, greater<Transaction*>> Spreadsheet::getAllEntries() {
     return entries_;
 }
-// display all entries in a table format
+/** display all entries in a table format */
 void Spreadsheet::display() {
     cout << "   Date    | Amount      |  Tag" << endl;
     cout << "-----------|-------------|---------" << endl;

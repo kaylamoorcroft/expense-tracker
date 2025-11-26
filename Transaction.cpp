@@ -11,12 +11,6 @@ Transaction::Transaction() {
     time(&timestamp_); // Get the timestamp for the current date and time
     datetime_ = *localtime(&timestamp_);
 }
-Transaction::Transaction(const 
-    Transaction &t) {
-    timestamp_ = t.timestamp_;
-    datetime_ = t.datetime_;
-    amount_ = t.amount_;
-}
 /** Create new transaction with year, month and day */
 Transaction::Transaction(int year, int month, int day) {
     setDate(year, month, day);
@@ -45,10 +39,15 @@ bool Transaction::datesAreEqual(int year, int month, int day) {
 bool Transaction::operator<(const Transaction& other) const {
     return timestamp_ < other.timestamp_;
 }
-
-Income::Income(const Income &i) : Transaction(i) {
-    category_ = i.category_;
+/** get the string representation for csv file */
+string Transaction::toString() {
+    return getDateString() + "," + to_string(amount_) + "," + getCategory();
 }
+/** Display the amount, date and category of the expense */
+void Transaction::display() {
+    cout << getDateString() << " | " << setw(11) << getAmountString() << " | " << getCategory() << endl;
+}
+
 /** Create new income of amount dollars from a set source with today's date 
 or a default value of $0 and source = "undefined"*/
 Income::Income(double amount, string category) : Transaction() {
@@ -76,14 +75,11 @@ string Income::getAmountString() {
     ss << showbase << put_money(amount_ * 100); // amount in cents
     return ss.str();
 }
-/** Display the amount, date and source of the income */
-void Income::display() {
-    cout << getDateString() << " | " << setw(11) << getAmountString() << " | " << category_ << endl;
+/** return category string */
+string Income::getCategory() {
+    return category_;
 }
 
-Expense::Expense(const Expense &e) : Transaction(e) {
-    category_ = e.category_;
-}
 /** Create new expense of amount dollars from a set category with today's date 
 or a default value of $0 and category = "undefined"*/
 Expense::Expense(double amount, string category) : Transaction() {
@@ -111,7 +107,7 @@ string Expense::getAmountString() {
     ss << showbase << put_money(amount_ * 100); // amount in cents
     return ss.str();
 }
-/** Display the amount, date and category of the expense */
-void Expense::display() {
-    cout << getDateString() << " | " << setw(11) << getAmountString() << " | " << category_ << endl;
+/** return category string */
+string Expense::getCategory() {
+    return category_;
 }

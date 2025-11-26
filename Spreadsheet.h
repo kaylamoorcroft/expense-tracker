@@ -11,6 +11,7 @@ void test();
     Transaction* updateEntry();
     Transaction* getEntry();
     set<Transaction*, greater<Transaction*>> printEntriesFromDate(int year, int month, int day);
+    set<Transaction*, greater<Transaction*>> filterMonth(int year, int month, int day);
     set<Transaction*, greater<Transaction*>> getAllEntries();
     void display();
 };
