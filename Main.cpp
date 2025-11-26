@@ -62,11 +62,15 @@ int main() {
     s.addEntry(parseRecord(testRecord));
     cout << "initial: " << endl;
     s.display();
-    s.updateEntry();
-    cout << "updated: " << endl;
-    s.display();
-    s.deleteEntry();
-    cout << "after deletion: " << endl;
-    s.display();
+    // cout << "\n--from nov 2025: " << endl;
+    // for (Transaction* t : s.filterMonth(2025, 11)) {
+    //     t->display();
+    // }
+    // s.updateEntry();
+    // cout << "updated: " << endl;
+    // s.display();
+    // s.deleteEntry();
+    // cout << "after deletion: " << endl;
+    // s.display();
     return 0;
 }

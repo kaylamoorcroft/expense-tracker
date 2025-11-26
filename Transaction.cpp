@@ -30,10 +30,16 @@ string Transaction::getDateString() {
     strftime(output, 11, "%Y/%m/%d", &datetime_);
     return output;
 }
+/** returns true if Transaction date is same as date passed in */
 bool Transaction::datesAreEqual(int year, int month, int day) {
     return (datetime_.tm_year == year - 1900) 
     && (datetime_.tm_mon == month - 1)
     && (datetime_.tm_mday == day);
+}
+/** returns true if Transaction month and year is same as info passed in*/
+bool Transaction::monthsAreEqual(int year, int month) {
+    return (datetime_.tm_year == year - 1900) 
+    && (datetime_.tm_mon == month - 1);
 }
 /** Add support for comparing / sorting Transactions by date */
 bool Transaction::operator<(const Transaction& other) const {

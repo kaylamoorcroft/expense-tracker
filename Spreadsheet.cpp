@@ -10,6 +10,10 @@ bool Spreadsheet::addEntry(Transaction* entry) {
 // remove entry
 Transaction* Spreadsheet::deleteEntry() {
     Transaction* entry = getEntry();
+    if (entry == nullptr) {
+        cout << "entry does not exist..." << endl;
+        return nullptr;
+    }
     char option;
     cout << "Are you sure you want to delete this entry (y/n)? > "; cin >> option;
     if (option == 'y') {
@@ -21,6 +25,10 @@ Transaction* Spreadsheet::deleteEntry() {
 // change entry info
 Transaction* Spreadsheet::updateEntry() {
     Transaction* entry = getEntry();
+    if (entry == nullptr) {
+        cout << "entry does not exist..." << endl;
+        return nullptr;
+    }
     cout << "Select what you want to edit:" << endl;
     cout << "\t(1) Date \n\t(2) Amount \n\t(3) Category" << endl;
     int option; cin >> option;
@@ -70,21 +78,23 @@ Transaction* Spreadsheet::getEntry() {
 }
 // filter by date and print
 set<Transaction*, greater<Transaction*>> Spreadsheet::printEntriesFromDate(int year, int month, int day) {
-    set<Transaction*, greater<Transaction*>> filtered = filterMonth(year, month, day);
+    set<Transaction*, greater<Transaction*>> filtered;
     int counter = 1;
-    for (Transaction* t : filtered) {
-        cout << "(" << counter << ") ";
-        t->display();
-        counter++;
+    for (Transaction* t : entries_) {
+        if (t->datesAreEqual(year, month, day)) {
+            cout << "(" << counter << ") ";
+            t->display();
+            counter++;
+        }
     }
     return filtered;
 }
 
 // filter by date
-set<Transaction*, greater<Transaction*>> Spreadsheet::filterMonth(int year, int month, int day) {
+set<Transaction*, greater<Transaction*>> Spreadsheet::filterMonth(int year, int month) {
     set<Transaction*, greater<Transaction*>> filtered;
     for (Transaction* t : entries_) {
-        if (t->datesAreEqual(year, month, day)) {
+        if (t->monthsAreEqual(year, month)) {
             filtered.insert(t);
         }
     }

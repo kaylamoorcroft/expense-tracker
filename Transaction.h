@@ -16,6 +16,7 @@ public:
     void setDate(int year, int month, int day);
     string getDateString();
     bool datesAreEqual(int year, int month, int day);
+    bool monthsAreEqual(int year, int month);
     bool operator <(const Transaction& other) const;
     string toString();
     void display();
