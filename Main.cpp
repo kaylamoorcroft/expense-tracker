@@ -44,6 +44,7 @@ int main() {
                 cout << "\tEnter filename > ";
                 cin >> filename;
                 // code to save to file
+                sheet.exportFile(filename);
                 cout << "\nSaving " << filename << "..." << endl; // replace with function
                 break;
             case 3: // add

@@ -193,3 +193,15 @@ void Spreadsheet::importFile(string filename){
         addEntry(newRecord);
     }
 }
+
+//save updated spreadsheet or transactions to file
+void Spreadsheet::exportFile(string filename){
+    ofstream saveFile(filename);
+
+    // for each entry in spreadsheet, convert literal values to string type before saving in csv
+    for (Transaction* t: entries_){
+        //convert literal values back to strings before saving to file:
+        string record = t->toString(); //toString will accept Transaction* type and return a string
+        saveFile << record << "\n";
+    }
+}

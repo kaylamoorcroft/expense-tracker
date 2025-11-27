@@ -16,4 +16,5 @@ public:
     void display();
     Transaction* parseRecord(char* record);
     void importFile(string filename);
+    void exportFile(string filename);
 };
