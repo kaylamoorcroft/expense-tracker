@@ -192,6 +192,7 @@ void Spreadsheet::importFile(string filename){
         //add converted entry from csv file
         addEntry(newRecord);
     }
+    readFile.close();
 }
 
 //save updated spreadsheet or transactions to file
@@ -204,4 +205,5 @@ void Spreadsheet::exportFile(string filename){
         string record = t->toString(); //toString will accept Transaction* type and return a string
         saveFile << record << "\n";
     }
+    saveFile.close();
 }
