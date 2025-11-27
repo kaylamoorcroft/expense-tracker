@@ -6,6 +6,7 @@ private:
     set<Transaction*, greater<Transaction*>> entries_; // set is like an ordered list with unique values
 public:
     bool addEntry(Transaction* entry);
+    bool addEntryFromUser();
     Transaction* deleteEntry();
     Transaction* updateEntry();
     Transaction* getEntry();

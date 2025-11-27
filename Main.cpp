@@ -18,7 +18,6 @@ Transaction* parseRecord(char* record) {
         // set attribute value
         switch(counter) {
             case 0: // date
-                cout << "datestring: " << attribute << endl;
                 strptime(attribute, "%Y/%m/%d", &datetime);
                 datetime.tm_hour = 0; datetime.tm_min = 0; datetime.tm_sec = 0;
                 datetime.tm_isdst = -1; // Daylight Savings - use computer's timezone setting
@@ -33,7 +32,6 @@ Transaction* parseRecord(char* record) {
         attribute = strtok(nullptr, ",");
         counter++;
     }
-    cout << "year: " << datetime.tm_year << endl;
     if (amount < 0) {
         return new Expense(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, amount, category);
     }
@@ -82,7 +80,7 @@ int main() {
                 break;
             case 3: // add
                 // call function to get input and add transaction
-                cout << "\nAdding transaction..." << endl; // replace with function
+                sheet.addEntryFromUser();
                 break;
             case 4: // delete
                 sheet.deleteEntry();

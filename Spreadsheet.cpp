@@ -7,6 +7,25 @@ using namespace std;
 bool Spreadsheet::addEntry(Transaction* entry) {
     return entries_.insert(entry).second;
 }
+// add new entry through user input
+bool Spreadsheet::addEntryFromUser() {
+    int year, month, day;
+    double amount; 
+    string category;
+    Transaction* entry;
+    cout << "Please enter  date: \n\tYear > "; cin >> year;
+    cout << "\tMonth > "; cin >> month;
+    cout << "\tDay > "; cin >> day;
+    cout << "Please enter amount > "; cin >> amount;
+    cout << "Please enter category > "; cin >> category;
+    if (amount < 0) {
+        entry = new Expense(year, month, day, amount, category);
+    }
+    else {
+        entry = new Income(year, month, day, amount, category);
+    }
+    return entries_.insert(entry).second;
+}
 // remove entry
 Transaction* Spreadsheet::deleteEntry() {
     Transaction* entry = getEntry();
