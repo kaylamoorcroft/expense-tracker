@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include "Spreadsheet.h"
 
 using namespace std;
@@ -7,40 +6,6 @@ using namespace std;
 // main will include summary, import, export functions
 //https://www.geeksforgeeks.org/cpp/convert-string-char-array-cpp/
 // https://www.geeksforgeeks.org/cpp/csv-file-management-using-c/
-
-
-// create new transaction by parsing record
-Transaction* parseRecord(char* record) {
-    char *attribute = strtok(record, ",");
-    int counter = 0;
-    struct tm datetime;
-    double amount;
-    string category;
-    while (attribute != nullptr) {
-        // set attribute value
-        switch(counter) {
-            case 0: // date
-                strptime(attribute, "%Y/%m/%d", &datetime);
-                datetime.tm_hour = 0; datetime.tm_min = 0; datetime.tm_sec = 0;
-                datetime.tm_isdst = -1; // Daylight Savings - use computer's timezone setting
-                mktime(&datetime);
-            case 1: // amount
-                amount = stod(attribute);
-                break;
-            case 2: // category
-                category = attribute;
-        }
-        // Get the next substring
-        attribute = strtok(nullptr, ",");
-        counter++;
-    }
-    if (amount < 0) {
-        return new Expense(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, amount, category);
-    }
-    else {
-        return new Income(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, amount, category);
-    }
-}
 
 void displayMenu() {
     cout << "\n-------- MENU --------" << endl;
@@ -53,28 +18,6 @@ void displayMenu() {
     cout << "7) Display spreadsheet" << endl;
     cout << "8) Get stats" << endl;
     cout << "\nPlease select an operation (enter 0 to quit) > ";
-}
-
-//read csv file, convert string records into Transaction objects and add Entries
-void importFile(string filename){
-    ifstream readFile(filename);
-    string record;
-
-    //loop to get all lines/records from csv file
-    while (getline(readFile, record)){
-        //convert (string) record to array of chars to be used in parseRecord()
-        int arrayLength = record.length();
-        char recordArray[arrayLength + 1];
-        strcpy(recordArray, record.c_str());
-
-        //pass new char array to be converted from csv data
-        Transaction* newRecord = parseRecord(recordArray);
-        newRecord->display();
-        
-        //add converted entry from csv file
-        Spreadsheet spreadsheet;
-        spreadsheet.addEntry(newRecord);
-    }
 }
 
 int main() {
@@ -94,7 +37,8 @@ int main() {
                 cout << "\tEnter filename > ";
                 cin >> filename;
                 // code to load filename
-                importFile(filename);
+                sheet.importFile(filename);
+                cout << "\n" << filename << " loaded successfully" << endl;
                 break;
             case 2: // save file
                 cout << "\tEnter filename > ";
