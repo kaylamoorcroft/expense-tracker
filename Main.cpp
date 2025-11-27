@@ -1,9 +1,11 @@
 #include <iostream>
+#include <fstream>
 #include "Spreadsheet.h"
 
 using namespace std;
 
 // main will include summary, import, export functions
+//https://www.geeksforgeeks.org/cpp/convert-string-char-array-cpp/
 // https://www.geeksforgeeks.org/cpp/csv-file-management-using-c/
 
 
@@ -53,6 +55,28 @@ void displayMenu() {
     cout << "\nPlease select an operation (enter 0 to quit) > ";
 }
 
+//read csv file, convert string records into Transaction objects and add Entries
+void importFile(string filename){
+    ifstream readFile(filename);
+    string record;
+
+    //loop to get all lines/records from csv file
+    while (getline(readFile, record)){
+        //convert (string) record to array of chars to be used in parseRecord()
+        int arrayLength = record.length();
+        char recordArray[arrayLength + 1];
+        strcpy(recordArray, record.c_str());
+
+        //pass new char array to be converted from csv data
+        Transaction* newRecord = parseRecord(recordArray);
+        newRecord->display();
+        
+        //add converted entry from csv file
+        Spreadsheet spreadsheet;
+        spreadsheet.addEntry(newRecord);
+    }
+}
+
 int main() {
     cout << "~~ WELCOME TO EXPENSE TRACKER ~~" << endl;
     Spreadsheet sheet;
@@ -70,7 +94,7 @@ int main() {
                 cout << "\tEnter filename > ";
                 cin >> filename;
                 // code to load filename
-                cout << "\nLoading " << filename << "..." << endl; // replace with function
+                importFile(filename);
                 break;
             case 2: // save file
                 cout << "\tEnter filename > ";
