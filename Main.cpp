@@ -65,7 +65,7 @@ int main() {
                 break;
             case 8: // stats
                 // call stats summary function
-                cout << "\nSummary..." << endl; // replace with function
+                sheet.calculateStats();
                 break;
             default: // invalid option
                 cout << "\nInvalid selection... please try again" << endl;

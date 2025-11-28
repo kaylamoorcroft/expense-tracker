@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip>
+#include <locale>
 #include "Spreadsheet.h"
 
 using namespace std;
@@ -206,4 +208,30 @@ void Spreadsheet::exportFile(string filename){
         saveFile << record << "\n";
     }
     saveFile.close();
+}
+
+//calculate total income and total expense for a given month
+void Spreadsheet::calculateStats(){
+    int year, month;
+    cout << "Please enter date: \n\tYear > "; cin >> year;
+    cout << "\tMonth > "; cin >> month;
+
+    //filter entries by month
+    set<Transaction*, greater<Transaction*>> monthEntries;
+    monthEntries = filterMonth(year, month);
+
+    //display entries for selected month
+    for (Transaction* t : monthEntries) {
+        t->display();
+    }
+
+    double total = 0;
+    //add all amount_ members from each entry of the month
+    for(Transaction* t : monthEntries){
+            total += t->getAmount();
+        }
+    
+    cout << "\nTotal Expenditures for " << year << "/" << month << ": ";
+    cout.imbue(locale("en_CA.UTF-8"));//format total value into money type string
+    cout << showbase << put_money(total * 100) << endl;
 }
