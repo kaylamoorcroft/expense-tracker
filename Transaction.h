@@ -13,11 +13,11 @@ protected:
 public:
     Transaction();
     Transaction(int year, int month, int day);
+    Transaction(const Transaction& t);
     void setDate(int year, int month, int day);
     string getDateString();
     bool datesAreEqual(int year, int month, int day);
     bool monthsAreEqual(int year, int month);
-    bool operator <(const Transaction& other) const;
     string toString();
     void display();
     double getAmount();
@@ -34,6 +34,8 @@ private:
 public:
     Income(double amount = 0, string source = "undefined");
     Income(int year, int month, int day, double amount = 0, string source = "undefined");
+    Income(const Income& t);
+    bool operator <(const Income& other) const;
     void setAmount(double amount) override;
     void setCategory(string category) override;
     string getAmountString() override;
@@ -47,6 +49,8 @@ private:
 public:
     Expense(double amount = 0, string category = "undefined");
     Expense(int year, int month, int day, double amount = 0, string source = "undefined");
+    Expense(const Expense& t);
+    bool operator <(const Expense& other) const;
     void setAmount(double amount) override;
     void setCategory(string category) override;
     string getAmountString() override;

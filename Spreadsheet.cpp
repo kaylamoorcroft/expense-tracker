@@ -128,10 +128,6 @@ set<Transaction*, greater<Transaction*>> Spreadsheet::filterMonth(int year, int 
     }
     return filtered;
 }
-/** get all entries */
-set<Transaction*, greater<Transaction*>> Spreadsheet::getAllEntries() {
-    return entries_;
-}
 /** display all entries in a table format */
 void Spreadsheet::display() {
     cout << "   Date    | Amount      |  Tag" << endl;

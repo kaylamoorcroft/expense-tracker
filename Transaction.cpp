@@ -15,6 +15,12 @@ Transaction::Transaction() {
 Transaction::Transaction(int year, int month, int day) {
     setDate(year, month, day);
 }
+// Copy Constructor
+Transaction::Transaction(const Transaction& t) {
+    timestamp_ = t.timestamp_;
+    datetime_ = t.datetime_;
+    amount_ = t.amount_;
+}
 /** Set transaction date with year, month and day */
 void Transaction::setDate(int year, int month, int day) {
     datetime_.tm_year = year - 1900; // Number of years since 1900
@@ -42,16 +48,20 @@ bool Transaction::monthsAreEqual(int year, int month) {
     && (datetime_.tm_mon == month - 1);
 }
 /** Add support for comparing / sorting Transactions by date */
-bool Transaction::operator<(const Transaction& other) const {
-    return timestamp_ < other.timestamp_;
-}
+// bool Transaction::operator<(const Transaction& other) const {
+//     if (timestamp_ != other.timestamp_) {
+//         cout << timestamp_ << " < " << other.timestamp_ << " = " << (timestamp_ < other.timestamp_) << endl;
+//         return timestamp_ < other.timestamp_;
+//     }
+//     return amount_ < other.amount_; // Secondary sort by name if dates are equal
+// }
 /** get the string representation for csv file */
 string Transaction::toString() {
     return getDateString() + "," + to_string(amount_) + "," + getCategory();
 }
 /** Display the amount, date and category of the expense */
 void Transaction::display() {
-    cout << getDateString() << " | " << setw(11) << getAmountString() << " | " << getCategory() << endl;
+    cout << getDateString() << " | " << timestamp_ << " | " << setw(11) << getAmountString() << " | " << getCategory() << endl;
 }
 
 /** Create new income of amount dollars from a set source with today's date 
@@ -65,6 +75,17 @@ or a default value of $0 and source = "undefined"*/
 Income::Income(int year, int month, int day, double amount, string category) : Transaction(year, month, day) {
     amount_ = amount;
     category_ = category;
+}
+// Copy Constructor
+Income::Income(const Income& t) : Transaction(t) {
+    category_ = t.category_;
+}
+bool Income::operator <(const Income& other) const {
+    if (timestamp_ != other.timestamp_) {
+        cout << timestamp_ << " < " << other.timestamp_ << " = " << (timestamp_ < other.timestamp_) << endl;
+        return timestamp_ < other.timestamp_;
+    }
+    return amount_ < other.amount_; // Secondary sort by name if dates are equal
 }
 /** Set income amount in dollars */
 void Income::setAmount(double amount) {
@@ -97,6 +118,17 @@ or a default value of $0 and category = "undefined"*/
 Expense::Expense(int year, int month, int day, double amount, string category) : Transaction(year, month, day) {
     amount_ = -amount;
     category_ = category;
+}
+// Copy Constructor
+Expense::Expense(const Expense& t) : Transaction(t) {
+    category_ = t.category_;
+}
+bool Expense::operator <(const Expense& other) const {
+    if (timestamp_ != other.timestamp_) {
+        cout << timestamp_ << " < " << other.timestamp_ << " = " << (timestamp_ < other.timestamp_) << endl;
+        return timestamp_ < other.timestamp_;
+    }
+    return amount_ < other.amount_; // Secondary sort by name if dates are equal
 }
 /** Set expense amount in dollars */
 void Expense::setAmount(double amount) {

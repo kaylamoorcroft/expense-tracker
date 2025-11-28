@@ -25,6 +25,14 @@ int main() {
     Spreadsheet sheet;
     int option;
     string filename;
+
+    char str1[30] = "2020/06/15,-50.900000, eggs";
+    char str2[30] = "2021/07/28,-17.990000, candy";
+    Transaction* t1 = sheet.parseRecord(str1);
+    Transaction* t2 = sheet.parseRecord(str2);
+    t1->display();
+    t2->display();
+    cout << "t1 < t2: " << (t1 < t2) << endl;
     do {
         displayMenu();
         cin >> option;

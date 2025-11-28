@@ -12,7 +12,6 @@ public:
     Transaction* getEntry();
     set<Transaction*, greater<Transaction*>> printEntriesFromDate(int year, int month, int day);
     set<Transaction*, greater<Transaction*>> filterMonth(int year, int month);
-    set<Transaction*, greater<Transaction*>> getAllEntries();
     void display();
     Transaction* parseRecord(char* record);
     void importFile(string filename);
