@@ -48,7 +48,6 @@ int main() {
                 cout << "\nSaving " << filename << "..." << endl; // replace with function
                 break;
             case 3: // add
-                // call function to get input and add transaction
                 if (sheet.addEntryFromUser()) {
                     cout << "\nSuccessfully inserted new entry!" << endl;
                 }
@@ -57,10 +56,20 @@ int main() {
                 }
                 break;
             case 4: // delete
-                sheet.deleteEntry();
+                if (sheet.deleteEntry()) {
+                    cout << "\nEntry deleted" << endl;
+                }
+                else {
+                    cout << "\nEntry not deleted..." << endl;
+                }
                 break;
             case 5: // edit 
-                sheet.updateEntry();
+                if (sheet.updateEntry()) {
+                    cout << "\nEntry successfully updated!" << endl;
+                }
+                else {
+                    cout << "\nError updating entry..." << endl;
+                }
                 break;
             case 6: // get
                 sheet.getEntry();

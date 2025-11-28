@@ -7,8 +7,8 @@ private:
 public:
     bool addEntry(Transaction* entry);
     bool addEntryFromUser();
-    Transaction* deleteEntry();
-    Transaction* updateEntry();
+    bool deleteEntry();
+    bool updateEntry();
     Transaction* getEntry();
     set<Transaction*, greater<Transaction*>> printEntriesFromDate(int year, int month, int day);
     set<Transaction*, greater<Transaction*>> filterMonth(int year, int month);
