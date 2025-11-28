@@ -15,19 +15,26 @@ bool Spreadsheet::addEntryFromUser() {
     int year, month, day;
     double amount; 
     string category;
-    Transaction* entry;
+    char type;
+    
+    cout << "\nChoose Income (i) or Expense (e) > "; cin >> type;
+    while (type != 'i' && type != 'e') {
+        cout << "Invalid input... please try again > "; cin >> type;
+    }
     cout << "Please enter  date: \n\tYear > "; cin >> year;
     cout << "\tMonth > "; cin >> month;
     cout << "\tDay > "; cin >> day;
-    cout << "Please enter amount > "; cin >> amount;
+    cout << "Please enter amount spent / received > "; cin >> amount;
+    while (amount < 0) {
+        cout << "Invalid input... please enter a positive amount > "; cin >> type;
+    }
     cout << "Please enter category > "; cin >> category;
-    if (amount < 0) {
-        entry = new Expense(year, month, day, amount, category);
+    if (type == 'e') {
+        return addEntry(new Expense(year, month, day, amount, category));
     }
     else {
-        entry = new Income(year, month, day, amount, category);
+        return addEntry(new Income(year, month, day, amount, category));
     }
-    return entries_.insert(entry).second;
 }
 // remove entry
 Transaction* Spreadsheet::deleteEntry() {
@@ -92,6 +99,8 @@ Transaction* Spreadsheet::getEntry() {
     int i = 1;
     for (Transaction* t : filtered) {
         if (i == num) {
+            cout << "(" << i << ") ";
+            t->display();
             return t;
         }
         i++;

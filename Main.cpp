@@ -49,7 +49,12 @@ int main() {
                 break;
             case 3: // add
                 // call function to get input and add transaction
-                sheet.addEntryFromUser();
+                if (sheet.addEntryFromUser()) {
+                    cout << "\nSuccessfully inserted new entry!" << endl;
+                }
+                else {
+                    cout << "\nError inserting new entry..." << endl;
+                }
                 break;
             case 4: // delete
                 sheet.deleteEntry();
