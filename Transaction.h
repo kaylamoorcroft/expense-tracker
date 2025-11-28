@@ -20,6 +20,7 @@ public:
     bool operator <(const Transaction& other) const;
     string toString();
     void display();
+    double getAmount();
     virtual void setAmount(double amount) = 0;
     virtual void setCategory(string category) = 0;
     virtual string getAmountString() = 0;

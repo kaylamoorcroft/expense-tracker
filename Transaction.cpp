@@ -117,3 +117,8 @@ string Expense::getAmountString() {
 string Expense::getCategory() {
     return category_;
 }
+
+//get amount_ (protected data member)
+double Transaction::getAmount(){
+    return amount_;
+}
