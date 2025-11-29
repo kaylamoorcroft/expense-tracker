@@ -163,7 +163,7 @@ Transaction* Spreadsheet::parseRecord(char* record) {
         counter++;
     }
     if (amount < 0) {
-        return new Expense(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, amount, category);
+        return new Expense(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, -amount, category);
     }
     else {
         return new Income(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, amount, category);
@@ -206,7 +206,7 @@ void Spreadsheet::exportFile(string filename){
     // for each entry in spreadsheet, convert literal values to string type before saving in csv
     for (Transaction* t: entries_){
         //convert literal values back to strings before saving to file:
-        string record = t->toString(); //toString will accept Transaction* type and return a string
+        string record = t->toString(); //convert record Transaction* type to string
         saveFile << record << "\n";
     }
     saveFile.close();
@@ -223,17 +223,35 @@ void Spreadsheet::calculateStats(){
     monthEntries = filterMonth(year, month);
 
     //display entries for selected month
-    for (Transaction* t : monthEntries) {
-        t->display();
+    // for (Transaction* t : monthEntries) {
+    //     t->display();
+    // }
+
+    double totalIncome, totalExpense, cashflow;
+    totalIncome = 0;
+    totalExpense = 0;
+
+    //determine if entry is income or expense and record total for month
+    for(Transaction* t : monthEntries){
+        if(t->getAmount() >=0){
+            totalIncome += t->getAmount();
+        }
+        else{
+            totalExpense += t->getAmount();
+        }
     }
 
-    double total = 0;
-    //add all amount_ members from each entry of the month
-    for(Transaction* t : monthEntries){
-            total += t->getAmount();
-        }
-    
-    cout << "\nTotal Expenditures for " << year << "/" << month << ": ";
+    //net profit or loss of a given month
+    cashflow = totalIncome - (totalExpense * -1);
+
+    cout << "\n" << setw(36) << "MONTHLY SUMMARY\n" << endl;
+    cout << "   Total Income  |  Total Expense  |  Cashflow" << endl;
+    cout << "-----------------|-----------------|------------" << endl;
+
     cout.imbue(locale("en_CA.UTF-8"));//format total value into money type string
-    cout << showbase << put_money(total * 100) << endl;
+
+    //display formatted totalIncome, totalExpense, and cashflow (with spacing)
+    cout << setw(12)<< showbase << put_money(totalIncome*100) << setw(6) << "|"
+        << setw(12) << showbase << put_money(totalExpense*100) << setw(6) << "|"
+        << setw(10) << showbase << put_money(cashflow*100) << endl;
 }

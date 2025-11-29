@@ -61,7 +61,7 @@ string Transaction::toString() {
 }
 /** Display the amount, date and category of the expense */
 void Transaction::display() {
-    cout << getDateString() << " | " << timestamp_ << " | " << setw(11) << getAmountString() << " | " << getCategory() << endl;
+    cout << getDateString() << " | " << setw(11) << getAmountString() << " | " << getCategory() << endl;
 }
 
 /** Create new income of amount dollars from a set source with today's date 
