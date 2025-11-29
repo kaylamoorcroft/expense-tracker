@@ -26,7 +26,7 @@ bool Spreadsheet::addEntryFromUser() {
     cout << "\tDay > "; cin >> day;
     cout << "Please enter amount spent / received > "; cin >> amount;
     while (amount < 0) {
-        cout << "Invalid input... please enter a positive amount > "; cin >> type;
+        cout << "Invalid input... please enter a positive amount > "; cin >> amount;
     }
     cout << "Please enter category > "; cin >> category;
     if (type == 'e') {
