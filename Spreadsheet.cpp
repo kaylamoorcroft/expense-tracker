@@ -222,6 +222,12 @@ void Spreadsheet::importFile(string filename){
     ifstream readFile(filename);
     string record;
 
+    // Check if the file is opened
+    if (!readFile.is_open()) {
+        cout << "\nError: Unable to open file!" << endl;
+        return;
+    }
+
     //loop to get all lines/records from csv file
     while (getline(readFile, record)){
         //convert (string) record to array of chars to be used in parseRecord()
@@ -247,6 +253,12 @@ void Spreadsheet::importFile(string filename){
 //save updated spreadsheet or transactions to file
 void Spreadsheet::exportFile(string filename){
     ofstream saveFile(filename);
+
+    // Check if the file is opened
+    if (!saveFile.is_open()) {
+        cout << "\nError: Unable to save file!" << endl;
+        return;
+    }
 
     for (auto it = entries_.begin(); it != entries_.end(); ++it) {
         string record = (*it)->toString();
