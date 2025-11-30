@@ -25,7 +25,6 @@ int main() {
     Spreadsheet sheet;
     int option;
     string filename;
-
     do {
         displayMenu();
         cin >> option;

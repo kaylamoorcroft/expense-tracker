@@ -14,6 +14,8 @@ public:
     Transaction();
     Transaction(int year, int month, int day);
     Transaction(const Transaction& t);
+    virtual ~Transaction() {}
+    bool operator <(const Transaction& other) const;
     void setDate(int year, int month, int day);
     string getDateString();
     bool datesAreEqual(int year, int month, int day);
@@ -35,6 +37,7 @@ public:
     Income(double amount = 0, string source = "undefined");
     Income(int year, int month, int day, double amount = 0, string source = "undefined");
     Income(const Income& t);
+    ~Income() {}
     bool operator <(const Income& other) const;
     void setAmount(double amount) override;
     void setCategory(string category) override;
@@ -50,9 +53,17 @@ public:
     Expense(double amount = 0, string category = "undefined");
     Expense(int year, int month, int day, double amount = 0, string source = "undefined");
     Expense(const Expense& t);
+    ~Expense() {}
     bool operator <(const Expense& other) const;
     void setAmount(double amount) override;
     void setCategory(string category) override;
     string getAmountString() override;
     string getCategory() override;
+};
+
+struct TransactionComparator {
+    bool operator()(const unique_ptr<Transaction>& t1, const unique_ptr<Transaction>& t2) const;
+};
+struct TransactionRawPtrComparator {
+    bool operator()(const Transaction* t1, const Transaction* time2posix) const;
 };

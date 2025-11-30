@@ -48,13 +48,12 @@ bool Transaction::monthsAreEqual(int year, int month) {
     && (datetime_.tm_mon == month - 1);
 }
 /** Add support for comparing / sorting Transactions by date */
-// bool Transaction::operator<(const Transaction& other) const {
-//     if (timestamp_ != other.timestamp_) {
-//         cout << timestamp_ << " < " << other.timestamp_ << " = " << (timestamp_ < other.timestamp_) << endl;
-//         return timestamp_ < other.timestamp_;
-//     }
-//     return amount_ < other.amount_; // Secondary sort by name if dates are equal
-// }
+bool Transaction::operator<(const Transaction& other) const {
+    if (timestamp_ != other.timestamp_) {
+        return timestamp_ < other.timestamp_;
+    }
+    return amount_ < other.amount_; // Secondary sort by name if dates are equal
+}
 /** get the string representation for csv file */
 string Transaction::toString() {
     return getDateString() + "," + to_string(amount_) + "," + getCategory();
@@ -79,13 +78,6 @@ Income::Income(int year, int month, int day, double amount, string category) : T
 // Copy Constructor
 Income::Income(const Income& t) : Transaction(t) {
     category_ = t.category_;
-}
-bool Income::operator <(const Income& other) const {
-    if (timestamp_ != other.timestamp_) {
-        cout << timestamp_ << " < " << other.timestamp_ << " = " << (timestamp_ < other.timestamp_) << endl;
-        return timestamp_ < other.timestamp_;
-    }
-    return amount_ < other.amount_; // Secondary sort by name if dates are equal
 }
 /** Set income amount in dollars */
 void Income::setAmount(double amount) {
@@ -123,13 +115,6 @@ Expense::Expense(int year, int month, int day, double amount, string category) :
 Expense::Expense(const Expense& t) : Transaction(t) {
     category_ = t.category_;
 }
-bool Expense::operator <(const Expense& other) const {
-    if (timestamp_ != other.timestamp_) {
-        cout << timestamp_ << " < " << other.timestamp_ << " = " << (timestamp_ < other.timestamp_) << endl;
-        return timestamp_ < other.timestamp_;
-    }
-    return amount_ < other.amount_; // Secondary sort by name if dates are equal
-}
 /** Set expense amount in dollars */
 void Expense::setAmount(double amount) {
     amount_ = -amount;
@@ -153,4 +138,13 @@ string Expense::getCategory() {
 //get amount_ (protected data member)
 double Transaction::getAmount(){
     return amount_;
+}
+
+// to order unique_ptr objects
+bool TransactionComparator::operator()(const unique_ptr<Transaction>& t1, const unique_ptr<Transaction>& t2) const {
+    return *t1 < *t2; // dereference to compare actual Transaction objects
+}
+
+bool TransactionRawPtrComparator::operator()(const Transaction* t1, const Transaction* t2) const {
+    return t1 < t2;
 }

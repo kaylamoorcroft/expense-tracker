@@ -6,9 +6,22 @@
 
 using namespace std;
 
+
+// Move Constructor
+Spreadsheet::Spreadsheet(Spreadsheet&& other) noexcept
+    : entries_(std::move(other.entries_)) { cout << "called move constructor" << endl;}
+
+// Move Assignment Operator
+Spreadsheet& Spreadsheet::operator=(Spreadsheet&& other) noexcept {
+    if (this != &other) {
+        entries_ = std::move(other.entries_);
+    }
+    cout << "Move Assignment for spreadsheet " << endl;
+    return *this;
+}
 // create new entry
-bool Spreadsheet::addEntry(Transaction* entry) {
-    return entries_.insert(entry).second;
+bool Spreadsheet::addEntry(unique_ptr<Transaction> entry) {
+    return entries_.insert(std::move(entry)).second;
 }
 // add new entry through user input
 bool Spreadsheet::addEntryFromUser() {
@@ -30,10 +43,10 @@ bool Spreadsheet::addEntryFromUser() {
     }
     cout << "Please enter category > "; cin >> category;
     if (type == 'e') {
-        return addEntry(new Expense(year, month, day, amount, category));
+        return addEntry(make_unique<Expense>(year, month, day, -amount, category));
     }
     else {
-        return addEntry(new Income(year, month, day, amount, category));
+        return addEntry(make_unique<Income>(year, month, day, amount, category));
     }
 }
 // remove entry
@@ -46,7 +59,9 @@ bool Spreadsheet::deleteEntry() {
     char option;
     cout << "Are you sure you want to delete this entry (y/n)? > "; cin >> option;
     if (option == 'y') {
-        entries_.erase(entry);
+        auto it = std::find_if(entries_.begin(), entries_.end(),
+            [&](const std::unique_ptr<Transaction>& p) { return p.get() == entry; });
+        entries_.erase(it);
         return true;
     }
     return false;
@@ -61,29 +76,38 @@ bool Spreadsheet::updateEntry() {
     cout << "\t(1) Date \n\t(2) Amount \n\t(3) Category" << endl;
     int option; cin >> option;
     string category;
-    switch (option) {
-        case 1:
-            int year, month, day;
-            cout << "Please enter new date: \n\tYear > "; cin >> year;
-            cout << "\tMonth > "; cin >> month;
-            cout << "\tDay > "; cin >> day;
-            entry->setDate(year,month,day);
-            break;
-        case 2:
-            double amount; 
-            cout << "Please enter new amount > "; cin >> amount;
-            entry->setAmount(amount);
-            break;
-        case 3:
-            cout << "Please enter new category > "; cin >> category;
-            entry->setCategory(category);
-            break;
-        default:
-            cout << "Invalid option..." << endl;
+    if (entry) {
+        // remove from set
+        auto it = std::find_if(entries_.begin(), entries_.end(),
+            [&](const std::unique_ptr<Transaction>& p) { return p.get() == entry; });
+
+        unique_ptr<Transaction> owned(entry);
+        entries_.erase(it);
+
+        // modify
+        switch (option) {
+            case 1:
+                int year, month, day;
+                cout << "Please enter new date: \n\tYear > "; cin >> year;
+                cout << "\tMonth > "; cin >> month;
+                cout << "\tDay > "; cin >> day;
+                entry->setDate(year,month,day);
+                break;
+            case 2:
+                double amount; 
+                cout << "Please enter new amount > "; cin >> amount;
+                entry->setAmount(amount);
+                break;
+            case 3:
+                cout << "Please enter new category > "; cin >> category;
+                entry->setCategory(category);
+                break;
+            default:
+                cout << "Invalid option..." << endl;
+        }
+        return addEntry(std::move(owned));
     }
-    // update value in set
-    entries_.erase(entry);
-    return addEntry(entry);
+    return false;
 }
 // select entry
 Transaction* Spreadsheet::getEntry() {
@@ -91,7 +115,7 @@ Transaction* Spreadsheet::getEntry() {
     cout << "Please enter date: \n\tYear > "; cin >> year;
     cout << "\tMonth > "; cin >> month;
     cout << "\tDay > "; cin >> day;
-    set<Transaction*, greater<Transaction*>> filtered = printEntriesFromDate(year, month, day);
+    set<Transaction*, TransactionRawPtrComparator> filtered = printEntriesFromDate(year, month, day);
     int num; 
     cout << "Select entry number > "; cin >> num;
     int i = 1;
@@ -104,14 +128,14 @@ Transaction* Spreadsheet::getEntry() {
     return nullptr;
 }
 // filter by date and print
-set<Transaction*, greater<Transaction*>> Spreadsheet::printEntriesFromDate(int year, int month, int day) {
-    set<Transaction*, greater<Transaction*>> filtered;
+set<Transaction*, TransactionRawPtrComparator> Spreadsheet::printEntriesFromDate(int year, int month, int day) {
+    set<Transaction*, TransactionRawPtrComparator> filtered;
     int counter = 1;
-    for (Transaction* t : entries_) {
-        if (t->datesAreEqual(year, month, day)) {
+    for (auto it = entries_.begin(); it != entries_.end(); ++it) {
+        if ((*it)->datesAreEqual(year, month, day)) {
             cout << "(" << counter << ") ";
-            t->display();
-            filtered.insert(t);
+            (*it)->display();
+            filtered.insert(it->get()); // insert raw pointer (not unique ptr)
             counter++;
         }
     }
@@ -119,11 +143,11 @@ set<Transaction*, greater<Transaction*>> Spreadsheet::printEntriesFromDate(int y
 }
 
 // filter by date
-set<Transaction*, greater<Transaction*>> Spreadsheet::filterMonth(int year, int month) {
-    set<Transaction*, greater<Transaction*>> filtered;
-    for (Transaction* t : entries_) {
-        if (t->monthsAreEqual(year, month)) {
-            filtered.insert(t);
+set<Transaction*, TransactionRawPtrComparator> Spreadsheet::filterMonth(int year, int month) {
+    set<Transaction*, TransactionRawPtrComparator> filtered;
+    for (auto it = entries_.begin(); it != entries_.end(); ++it) {
+        if ((*it)->monthsAreEqual(year, month)) {
+            filtered.insert(it->get()); // insert raw pointer (not unique ptr)
         }
     }
     return filtered;
@@ -132,13 +156,13 @@ set<Transaction*, greater<Transaction*>> Spreadsheet::filterMonth(int year, int 
 void Spreadsheet::display() {
     cout << "   Date    | Amount      |  Tag" << endl;
     cout << "-----------|-------------|---------" << endl;
-    for (Transaction* t : entries_) {
-        t->display();
+    for (auto it = entries_.begin(); it != entries_.end(); ++it) {
+        (*it)->display(); 
     }
 }
 
 // create new transaction by parsing record
-Transaction* Spreadsheet::parseRecord(char* record) {
+unique_ptr<Transaction> Spreadsheet::parseRecord(char* record) {
     char *attribute = strtok(record, ",");
     int counter = 0;
     struct tm datetime;
@@ -163,10 +187,10 @@ Transaction* Spreadsheet::parseRecord(char* record) {
         counter++;
     }
     if (amount < 0) {
-        return new Expense(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, -amount, category);
+        return make_unique<Expense>(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, -amount, category);
     }
     else {
-        return new Income(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, amount, category);
+        return make_unique<Income>(datetime.tm_year + 1900, datetime.tm_mon + 1, datetime.tm_mday, amount, category);
     }
 }
 
@@ -186,15 +210,12 @@ void Spreadsheet::importFile(string filename){
         }
         strcpy(recordArray, record.c_str());
 
-        //pass new char array to be converted from csv data
-        Transaction* newRecord = parseRecord(recordArray);
+        //add converted entry from csv file
+        addEntry(parseRecord(recordArray));
 
         // deallocate char pointer memory
         free(recordArray);
         recordArray = NULL;
-
-        //add converted entry from csv file
-        addEntry(newRecord);
     }
     readFile.close();
 }
@@ -203,10 +224,8 @@ void Spreadsheet::importFile(string filename){
 void Spreadsheet::exportFile(string filename){
     ofstream saveFile(filename);
 
-    // for each entry in spreadsheet, convert literal values to string type before saving in csv
-    for (Transaction* t: entries_){
-        //convert literal values back to strings before saving to file:
-        string record = t->toString(); //convert record Transaction* type to string
+    for (auto it = entries_.begin(); it != entries_.end(); ++it) {
+        string record = (*it)->toString();
         saveFile << record << "\n";
     }
     saveFile.close();
@@ -219,13 +238,12 @@ void Spreadsheet::calculateStats(){
     cout << "\tMonth > "; cin >> month;
 
     //filter entries by month
-    set<Transaction*, greater<Transaction*>> monthEntries;
+    set<Transaction*, TransactionRawPtrComparator> monthEntries;
     monthEntries = filterMonth(year, month);
 
-    //display entries for selected month
-    // for (Transaction* t : monthEntries) {
-    //     t->display();
-    // }
+    for (auto it = monthEntries.begin(); it != monthEntries.end(); ++it) {
+        (*it)->display(); 
+    }
 
     double totalIncome, totalExpense, cashflow;
     totalIncome = 0;
