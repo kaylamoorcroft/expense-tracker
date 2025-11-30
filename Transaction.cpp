@@ -3,6 +3,7 @@
 #include <iomanip> // https://en.cppreference.com/w/cpp/locale/money_put.html
 #include <locale>
 #include "Transaction.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -106,10 +107,7 @@ void Income::setCategory(string category) {
 }
 /** Get a string representation of income amount */
 string Income::getAmountString() {
-    stringstream ss;
-    ss.imbue(locale("en_CA.UTF-8"));
-    ss << showbase << put_money(amount_ * 100); // amount in cents
-    return ss.str();
+    return Utils::formatMoney(amount_);
 }
 /** return category string */
 string Income::getCategory() {
@@ -142,10 +140,7 @@ void Expense::setCategory(string category) {
 }
 /** Get a string representation of expense amount */
 string Expense::getAmountString() {
-    stringstream ss;
-    ss.imbue(locale("en_CA.UTF-8"));
-    ss << showbase << put_money(amount_ * 100); // amount in cents
-    return ss.str();
+    return Utils::formatMoney(amount_);
 }
 /** return category string */
 string Expense::getCategory() {

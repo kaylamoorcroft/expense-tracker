@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Spreadsheet.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ int main() {
     string filename;
     do {
         displayMenu();
-        cin >> option;
+        Utils::getValidNumInput(option, "");
 
         switch(option) {
             case 0: // quit

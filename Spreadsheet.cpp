@@ -3,42 +3,9 @@
 #include <iomanip>
 #include <locale>
 #include "Spreadsheet.h"
+#include "Utils.h"
 
 using namespace std;
-
-// https://www.geeksforgeeks.org/cpp/how-to-handle-wrong-data-type-input-in-cpp/
-// helper function to validate int/double input 
-template <typename T>
-void getValidNumInput(T& val, string prompt, T lower = -1, T upper = -1) {
-    bool validInput = false;
-    do {
-        cout << prompt;
-        cin >> val;
-        if (cin.fail()) {
-            cout << "\n--Invalid input! Expected an number... try again:" << endl;
-            // Clear the failbit and ignore the remaining input
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        }
-        else {
-            if (lower == upper && upper == -1) { // no upper / lower bounds
-                validInput = true;
-            }
-            else if (val <= upper && val >= lower) {
-                validInput = true;
-            }
-            else if (val >= lower && upper == -1) { // only lower bound set 
-                validInput = true;
-            }
-            else if (val < lower && lower == 0 && upper == -1) { // no negative numbers
-                cout << "\n--Invalid input! Please enter positive value... try again:" << endl;
-            }
-            else {
-                cout << "\n--Invalid input! Value out of range... try again:" << endl;
-            }
-        }
-    }  while (!validInput);
-}
 
 // create new entry
 bool Spreadsheet::addEntry(unique_ptr<Transaction> entry) {
@@ -62,11 +29,11 @@ bool Spreadsheet::addEntryFromUser() {
     }
     // custom date
     if (dateType == 'c') {
-        getValidNumInput(year, "\tYear > ", 1900);
-        getValidNumInput(month, "\tMonth > ", 1, 12);
-        getValidNumInput(day, "\tDay > ", 1, 31);
+        Utils::getValidNumInput(year, "\tYear > ", 1900);
+        Utils::getValidNumInput(month, "\tMonth > ", 1, 12);
+        Utils::getValidNumInput(day, "\tDay > ", 1, 31);
     }
-    getValidNumInput(amount, "Please enter amount spent / received > ", 0.0);
+    Utils::getValidNumInput(amount, "Please enter amount spent / received > ", 0.0);
     cout << "Please enter category > "; getline(cin >> ws, category); // read line with spaces and skip leading whitespace
 
     if (type == 'e') { // expense
@@ -111,7 +78,7 @@ bool Spreadsheet::updateEntry() {
     if (entry == nullptr) {
         return false;
     }
-    int option; getValidNumInput(option,"Select what you want to edit:\n\t(1) Date \n\t(2) Amount \n\t(3) Category\n\t>");
+    int option; Utils::getValidNumInput(option,"Select what you want to edit:\n\t(1) Date \n\t(2) Amount \n\t(3) Category\n\t>");
     string category;
 
     auto it = entries_.begin();
@@ -130,14 +97,14 @@ bool Spreadsheet::updateEntry() {
         case 1:
             int year, month, day;
             cout << "Please enter new date: \n"; 
-            getValidNumInput(year, "\tYear > ", 1900);
-            getValidNumInput(month, "\tMonth > ", 1, 12);
-            getValidNumInput(day, "\tDay > ", 1, 31);
+            Utils::getValidNumInput(year, "\tYear > ", 1900);
+            Utils::getValidNumInput(month, "\tMonth > ", 1, 12);
+            Utils::getValidNumInput(day, "\tDay > ", 1, 31);
             entry->setDate(year,month,day);
             break;
         case 2:
             double amount; 
-            getValidNumInput(amount, "Please enter new amount > ", 0.0);
+            Utils::getValidNumInput(amount, "Please enter new amount > ", 0.0);
             entry->setAmount(amount);
             break;
         case 3:
@@ -154,9 +121,9 @@ bool Spreadsheet::updateEntry() {
 Transaction* Spreadsheet::getEntry() {
     int year, month, day;
     cout << "Please enter date: \n"; 
-    getValidNumInput(year, "\tYear > ", 1900);
-    getValidNumInput(month, "\tMonth > ", 1, 12);
-    getValidNumInput(day, "\tDay > ", 1, 31);
+    Utils::getValidNumInput(year, "\tYear > ", 1900);
+    Utils::getValidNumInput(month, "\tMonth > ", 1, 12);
+    Utils::getValidNumInput(day, "\tDay > ", 1, 31);
     set<Transaction*, TransactionRawPtrComparator> filtered = printEntriesFromDate(year, month, day);
     if (filtered.size() == 0) { // no entries - exit
         cout << "No entries found for " << year << "/" << month << "/" << day << endl;
@@ -166,7 +133,7 @@ Transaction* Spreadsheet::getEntry() {
         return *filtered.begin(); 
     }
     int num; 
-    getValidNumInput(num, "Select entry number > ");
+    Utils::getValidNumInput(num, "Select entry number > ");
     int i = 1;
     for (Transaction* t : filtered) {
         if (i == num) {
@@ -320,17 +287,13 @@ void Spreadsheet::exportFile(string filename){
 //calculate total income and total expense for a given month
 void Spreadsheet::calculateStats(){
     int year, month;
-    cout << "Please enter date: \n"; 
-    getValidNumInput(year, "\tYear > ", 1900);
-    getValidNumInput(month, "\tMonth > ", 1, 12);
+    cout << "Please enter year and month: \n"; 
+    Utils::getValidNumInput(year, "\tYear > ", 1900);
+    Utils::getValidNumInput(month, "\tMonth > ", 1, 12);
 
     //filter entries by month
     set<Transaction*, TransactionRawPtrComparator> monthEntries;
     monthEntries = filterMonth(year, month);
-
-    for (auto it = monthEntries.begin(); it != monthEntries.end(); ++it) {
-        (*it)->display(); 
-    }
 
     double totalIncome, totalExpense, cashflow;
     totalIncome = 0;
@@ -349,14 +312,12 @@ void Spreadsheet::calculateStats(){
     //net profit or loss of a given month
     cashflow = totalIncome - (totalExpense * -1);
 
-    cout << "\n" << setw(36) << "MONTHLY SUMMARY\n" << endl;
-    cout << "   Total Income  |  Total Expense  |  Cashflow" << endl;
-    cout << "-----------------|-----------------|------------" << endl;
-
-    cout.imbue(locale("en_CA.UTF-8"));//format total value into money type string
+    cout << "\n" << setw(24) << "SUMMARY for " << Utils::getMonthName(month) << " " << year << "\n" << endl;
+    cout << "   Total Income  |  Total Expense  |   Cashflow" << endl;
+    cout << "-----------------|-----------------|--------------" << endl;
 
     //display formatted totalIncome, totalExpense, and cashflow (with spacing)
-    cout << setw(12)<< showbase << put_money(totalIncome*100) << setw(6) << "|"
-        << setw(12) << showbase << put_money(totalExpense*100) << setw(6) << "|"
-        << setw(10) << showbase << put_money(cashflow*100) << endl;
+    cout << setw(12)<< Utils::formatMoney(totalIncome) << setw(6) << "|"
+        << setw(12) << Utils::formatMoney(totalExpense) << setw(6) << "|"
+        << setw(12) << Utils::formatMoney(cashflow) << endl;
 }
