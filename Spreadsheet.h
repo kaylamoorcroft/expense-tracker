@@ -5,9 +5,6 @@ class Spreadsheet {
 private:
     set<unique_ptr<Transaction>, TransactionComparator> entries_; // set is like an ordered list with unique values
 public:
-    Spreadsheet() {}
-    Spreadsheet(Spreadsheet&& other) noexcept;
-    Spreadsheet& operator=(Spreadsheet&& other) noexcept;
     bool addEntry(unique_ptr<Transaction> entry);
     bool addEntryFromUser();
     bool deleteEntry();

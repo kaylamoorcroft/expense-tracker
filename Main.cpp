@@ -38,14 +38,12 @@ int main() {
                 cin >> filename;
                 // code to load filename
                 sheet.importFile(filename);
-                cout << "\n" << filename << " loaded successfully" << endl;
                 break;
             case 2: // save file
                 cout << "\tEnter filename > ";
                 cin >> filename;
                 // code to save to file
                 sheet.exportFile(filename);
-                cout << "\nSaving " << filename << "..." << endl; // replace with function
                 break;
             case 3: // add
                 if (sheet.addEntryFromUser()) {

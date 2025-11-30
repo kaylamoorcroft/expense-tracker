@@ -6,19 +6,39 @@
 
 using namespace std;
 
-
-// Move Constructor
-Spreadsheet::Spreadsheet(Spreadsheet&& other) noexcept
-    : entries_(std::move(other.entries_)) { cout << "called move constructor" << endl;}
-
-// Move Assignment Operator
-Spreadsheet& Spreadsheet::operator=(Spreadsheet&& other) noexcept {
-    if (this != &other) {
-        entries_ = std::move(other.entries_);
-    }
-    cout << "Move Assignment for spreadsheet " << endl;
-    return *this;
+// https://www.geeksforgeeks.org/cpp/how-to-handle-wrong-data-type-input-in-cpp/
+template <typename T>
+void getValidNumInput(T& val, string prompt, T lower = -1, T upper = -1) {
+    bool validInput = false;
+    do {
+        cout << prompt;
+        cin >> val;
+        if (cin.fail()) {
+            cout << "\n--Invalid input! Expected an number... try again:" << endl;
+            // Clear the failbit and ignore the remaining input
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        else {
+            if (lower == upper && upper == -1) { // no upper / lower bounds
+                validInput = true;
+            }
+            else if (val <= upper && val >= lower) {
+                validInput = true;
+            }
+            else if (val >= lower && upper == -1) { // only lower bound set 
+                validInput = true;
+            }
+            else if (val < lower && lower == 0 && upper == -1) { // no negative numbers
+                cout << "\n--Invalid input! Please enter positive value... try again:" << endl;
+            }
+            else {
+                cout << "\n--Invalid input! Value out of range... try again:" << endl;
+            }
+        }
+    }  while (!validInput);
 }
+
 // create new entry
 bool Spreadsheet::addEntry(unique_ptr<Transaction> entry) {
     return entries_.insert(std::move(entry)).second;
@@ -34,14 +54,13 @@ bool Spreadsheet::addEntryFromUser() {
     while (type != 'i' && type != 'e') {
         cout << "Invalid input... please try again > "; cin >> type;
     }
-    cout << "Please enter  date: \n\tYear > "; cin >> year;
-    cout << "\tMonth > "; cin >> month;
-    cout << "\tDay > "; cin >> day;
-    cout << "Please enter amount spent / received > "; cin >> amount;
-    while (amount < 0) {
-        cout << "Invalid input... please enter a positive amount > "; cin >> amount;
-    }
-    cout << "Please enter category > "; cin >> category;
+    cout << "Please enter  date: \n"; 
+    getValidNumInput(year, "\tYear > ", 1900);
+    getValidNumInput(month, "\tMonth > ", 1, 12);
+    getValidNumInput(day, "\tDay > ", 1, 31);
+    getValidNumInput(amount, "Please enter amount spent / received > ", 0.0);
+    cout << "Please enter category > "; getline(cin >> ws, category); // read line with spaces and skip leading whitespace
+    
     if (type == 'e') {
         return addEntry(make_unique<Expense>(year, month, day, -amount, category));
     }
@@ -53,7 +72,6 @@ bool Spreadsheet::addEntryFromUser() {
 bool Spreadsheet::deleteEntry() {
     Transaction* entry = getEntry();
     if (entry == nullptr) {
-        cout << "entry does not exist..." << endl;
         return false;
     }
     char option;
@@ -72,9 +90,7 @@ bool Spreadsheet::updateEntry() {
     if (entry == nullptr) {
         return false;
     }
-    cout << "Select what you want to edit:" << endl;
-    cout << "\t(1) Date \n\t(2) Amount \n\t(3) Category" << endl;
-    int option; cin >> option;
+    int option; getValidNumInput(option,"Select what you want to edit:\n\t(1) Date \n\t(2) Amount \n\t(3) Category\n\t>");
     string category;
     if (entry) {
         auto it = entries_.begin();
@@ -92,21 +108,19 @@ bool Spreadsheet::updateEntry() {
         switch (option) {
             case 1:
                 int year, month, day;
-                cout << "Please enter new date: \n\tYear > "; cin >> year;
-                cout << "\tMonth > "; cin >> month;
-                cout << "\tDay > "; cin >> day;
+                cout << "Please enter new date: \n"; 
+                getValidNumInput(year, "\tYear > ", 1900);
+                getValidNumInput(month, "\tMonth > ", 1, 12);
+                getValidNumInput(day, "\tDay > ", 1, 31);
                 entry->setDate(year,month,day);
                 break;
             case 2:
                 double amount; 
-                cout << "Please enter new amount > "; cin >> amount;
-                while (amount < 0) {
-                    cout << "Invalid input... please enter a positive amount > "; cin >> amount;
-                }
+                getValidNumInput(amount, "Please enter new amount > ", 0.0);
                 entry->setAmount(amount);
                 break;
             case 3:
-                cout << "Please enter new category > "; cin >> category;
+                cout << "Please enter new category > "; getline(cin >> ws, category); // read line with spaces and skip leading whitespace
                 entry->setCategory(category);
                 break;
             default:
@@ -119,12 +133,13 @@ bool Spreadsheet::updateEntry() {
 // select entry
 Transaction* Spreadsheet::getEntry() {
     int year, month, day;
-    cout << "Please enter date: \n\tYear > "; cin >> year;
-    cout << "\tMonth > "; cin >> month;
-    cout << "\tDay > "; cin >> day;
+    cout << "Please enter date: \n"; 
+    getValidNumInput(year, "\tYear > ", 1900);
+    getValidNumInput(month, "\tMonth > ", 1, 12);
+    getValidNumInput(day, "\tDay > ", 1, 31);
     set<Transaction*, TransactionRawPtrComparator> filtered = printEntriesFromDate(year, month, day);
     int num; 
-    cout << "Select entry number > "; cin >> num;
+    getValidNumInput(num, "Select entry number > ");
     int i = 1;
     for (Transaction* t : filtered) {
         if (i == num) {
@@ -203,6 +218,7 @@ unique_ptr<Transaction> Spreadsheet::parseRecord(char* record) {
 
 //read csv file, convert string records into Transaction objects and add Entries
 void Spreadsheet::importFile(string filename){
+    entries_.clear(); // clear existing file load
     ifstream readFile(filename);
     string record;
 
@@ -225,6 +241,7 @@ void Spreadsheet::importFile(string filename){
         recordArray = NULL;
     }
     readFile.close();
+    cout << "\n" << filename << " loaded successfully" << endl;
 }
 
 //save updated spreadsheet or transactions to file
@@ -236,13 +253,15 @@ void Spreadsheet::exportFile(string filename){
         saveFile << record << "\n";
     }
     saveFile.close();
+    cout << "\nSaving " << filename << "..." << endl;
 }
 
 //calculate total income and total expense for a given month
 void Spreadsheet::calculateStats(){
     int year, month;
-    cout << "Please enter date: \n\tYear > "; cin >> year;
-    cout << "\tMonth > "; cin >> month;
+    cout << "Please enter date: \n"; 
+    getValidNumInput(year, "\tYear > ", 1900);
+    getValidNumInput(month, "\tMonth > ", 1, 12);
 
     //filter entries by month
     set<Transaction*, TransactionRawPtrComparator> monthEntries;
