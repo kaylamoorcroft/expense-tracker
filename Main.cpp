@@ -86,41 +86,5 @@ int main() {
         }
     } while (option != 0);
 
-
-
-
-
-
-
-    // testing
-
-    // Income i(2020,5,3,50,"tutoring");
-    // Expense e(2020,5,4, 40, "food");
-    // string record1 = i.toString();
-    // char testRecord1[30];
-    // strcpy(testRecord1, record1.c_str()); 
-    // Spreadsheet s;
-    // s.addEntry(parseRecord(testRecord1));
-    // //s.addEntry(&i);
-    // s.addEntry(new Expense(30, "rent"));
-    // s.addEntry(&e);
-    // s.addEntry(new Income(20, "tutoring"));
-    // s.addEntry(new Income(2022,5,3,100000, "big moneys"));
-    // string r = "2022/01/01,50.00,hewwo";
-    // char testRecord[30];
-    // strcpy(testRecord, r.c_str()); 
-    // s.addEntry(parseRecord(testRecord));
-    // cout << "initial: " << endl;
-    // s.display();
-    // cout << "\n--from nov 2025: " << endl;
-    // for (Transaction* t : s.filterMonth(2025, 11)) {
-    //     t->display();
-    // }
-    // s.updateEntry();
-    // cout << "updated: " << endl;
-    // s.display();
-    // s.deleteEntry();
-    // cout << "after deletion: " << endl;
-    // s.display();
     return 0;
 }

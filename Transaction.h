@@ -38,7 +38,6 @@ public:
     Income(int year, int month, int day, double amount = 0, string source = "undefined");
     Income(const Income& t);
     ~Income() {}
-    bool operator <(const Income& other) const;
     void setAmount(double amount) override;
     void setCategory(string category) override;
     string getAmountString() override;
@@ -54,7 +53,6 @@ public:
     Expense(int year, int month, int day, double amount = 0, string source = "undefined");
     Expense(const Expense& t);
     ~Expense() {}
-    bool operator <(const Expense& other) const;
     void setAmount(double amount) override;
     void setCategory(string category) override;
     string getAmountString() override;
@@ -65,5 +63,5 @@ struct TransactionComparator {
     bool operator()(const unique_ptr<Transaction>& t1, const unique_ptr<Transaction>& t2) const;
 };
 struct TransactionRawPtrComparator {
-    bool operator()(const Transaction* t1, const Transaction* time2posix) const;
+    bool operator()(const Transaction* t1, const Transaction* t2) const;
 };

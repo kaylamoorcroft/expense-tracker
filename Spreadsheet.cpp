@@ -77,12 +77,16 @@ bool Spreadsheet::updateEntry() {
     int option; cin >> option;
     string category;
     if (entry) {
-        // remove from set
-        auto it = std::find_if(entries_.begin(), entries_.end(),
-            [&](const std::unique_ptr<Transaction>& p) { return p.get() == entry; });
-
-        unique_ptr<Transaction> owned(entry);
-        entries_.erase(it);
+        auto it = entries_.begin();
+        for (; it != entries_.end(); ++it) {
+            if ((*it).get() == entry) {
+                break;
+            }
+        }
+        unique_ptr<Transaction> temp;
+        temp.swap(const_cast<std::unique_ptr<Transaction>&>(*it));
+        entries_.erase(it); 
+        entry = temp.get();
 
         // modify
         switch (option) {
@@ -96,6 +100,9 @@ bool Spreadsheet::updateEntry() {
             case 2:
                 double amount; 
                 cout << "Please enter new amount > "; cin >> amount;
+                while (amount < 0) {
+                    cout << "Invalid input... please enter a positive amount > "; cin >> amount;
+                }
                 entry->setAmount(amount);
                 break;
             case 3:
@@ -105,7 +112,7 @@ bool Spreadsheet::updateEntry() {
             default:
                 cout << "Invalid option..." << endl;
         }
-        return addEntry(std::move(owned));
+        return entries_.insert(std::move(temp)).second;
     }
     return false;
 }
