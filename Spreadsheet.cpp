@@ -74,11 +74,18 @@ bool Spreadsheet::deleteEntry() {
     if (entry == nullptr) {
         return false;
     }
-    char option;
+    char option = '0';
     cout << "Are you sure you want to delete this entry (y/n)? > "; cin >> option;
+    while (!(option == 'y' || option == 'n')) {
+        cout << "Invalid selection... please enter 'y' or 'n' > "; cin >> option;
+    }
     if (option == 'y') {
-        auto it = std::find_if(entries_.begin(), entries_.end(),
-            [&](const std::unique_ptr<Transaction>& p) { return p.get() == entry; });
+        auto it = entries_.begin();
+        for (; it != entries_.end(); ++it) {
+            if ((*it).get() == entry) {
+                break;
+            }
+        }
         entries_.erase(it);
         return true;
     }
@@ -92,43 +99,42 @@ bool Spreadsheet::updateEntry() {
     }
     int option; getValidNumInput(option,"Select what you want to edit:\n\t(1) Date \n\t(2) Amount \n\t(3) Category\n\t>");
     string category;
-    if (entry) {
-        auto it = entries_.begin();
-        for (; it != entries_.end(); ++it) {
-            if ((*it).get() == entry) {
-                break;
-            }
-        }
-        unique_ptr<Transaction> temp;
-        temp.swap(const_cast<std::unique_ptr<Transaction>&>(*it));
-        entries_.erase(it); 
-        entry = temp.get();
 
-        // modify
-        switch (option) {
-            case 1:
-                int year, month, day;
-                cout << "Please enter new date: \n"; 
-                getValidNumInput(year, "\tYear > ", 1900);
-                getValidNumInput(month, "\tMonth > ", 1, 12);
-                getValidNumInput(day, "\tDay > ", 1, 31);
-                entry->setDate(year,month,day);
-                break;
-            case 2:
-                double amount; 
-                getValidNumInput(amount, "Please enter new amount > ", 0.0);
-                entry->setAmount(amount);
-                break;
-            case 3:
-                cout << "Please enter new category > "; getline(cin >> ws, category); // read line with spaces and skip leading whitespace
-                entry->setCategory(category);
-                break;
-            default:
-                cout << "Invalid option..." << endl;
+    auto it = entries_.begin();
+    for (; it != entries_.end(); ++it) {
+        if ((*it).get() == entry) {
+            break;
         }
-        return entries_.insert(std::move(temp)).second;
     }
-    return false;
+    unique_ptr<Transaction> temp;
+    temp.swap(const_cast<std::unique_ptr<Transaction>&>(*it));
+    entries_.erase(it); 
+    entry = temp.get();
+
+    // modify
+    switch (option) {
+        case 1:
+            int year, month, day;
+            cout << "Please enter new date: \n"; 
+            getValidNumInput(year, "\tYear > ", 1900);
+            getValidNumInput(month, "\tMonth > ", 1, 12);
+            getValidNumInput(day, "\tDay > ", 1, 31);
+            entry->setDate(year,month,day);
+            break;
+        case 2:
+            double amount; 
+            getValidNumInput(amount, "Please enter new amount > ", 0.0);
+            entry->setAmount(amount);
+            break;
+        case 3:
+            cout << "Please enter new category > "; getline(cin >> ws, category); // read line with spaces and skip leading whitespace
+            entry->setCategory(category);
+            break;
+        default:
+            cout << "Invalid option..." << endl;
+            return false;
+    }
+    return entries_.insert(std::move(temp)).second;
 }
 // select entry
 Transaction* Spreadsheet::getEntry() {
@@ -138,6 +144,13 @@ Transaction* Spreadsheet::getEntry() {
     getValidNumInput(month, "\tMonth > ", 1, 12);
     getValidNumInput(day, "\tDay > ", 1, 31);
     set<Transaction*, TransactionRawPtrComparator> filtered = printEntriesFromDate(year, month, day);
+    if (filtered.size() == 0) { // no entries - exit
+        cout << "No entries found for " << year << "/" << month << "/" << day << endl;
+        return nullptr;
+    }
+    if (filtered.size() == 1) { // get only entry
+        return *filtered.begin(); 
+    }
     int num; 
     getValidNumInput(num, "Select entry number > ");
     int i = 1;
