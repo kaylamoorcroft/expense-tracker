@@ -18,10 +18,14 @@ public:
     bool operator <(const Transaction& other) const;
     void setDate(int year, int month, int day);
     string getDateString();
+    string getMonthName();
+    int getDayOfMonth();
+    int getYear();
     bool datesAreEqual(int year, int month, int day);
     bool monthsAreEqual(int year, int month);
     string toString();
     void display();
+    void displayInTable();
     double getAmount();
     virtual void setAmount(double amount) = 0;
     virtual void setCategory(string category) = 0;

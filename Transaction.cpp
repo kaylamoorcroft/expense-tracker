@@ -36,6 +36,20 @@ string Transaction::getDateString() {
     strftime(output, 11, "%Y/%m/%d", &datetime_);
     return output;
 }
+/** Get month name, e.g., "January" */
+string Transaction::getMonthName() {
+    char output[10];
+    strftime(output, sizeof(output), "%B", &datetime_); 
+    return output;
+}
+/** Get day of month (1-31) */
+int Transaction::getDayOfMonth() {
+    return datetime_.tm_mday;
+}
+/** Get year, e.g., 2020 */
+int Transaction::getYear() {
+    return datetime_.tm_year + 1900;
+}
 /** returns true if Transaction date is same as date passed in */
 bool Transaction::datesAreEqual(int year, int month, int day) {
     return (datetime_.tm_year == year - 1900) 
@@ -60,7 +74,10 @@ string Transaction::toString() {
 }
 /** Display the amount, date and category of the expense */
 void Transaction::display() {
-    cout << getDateString() << " | " << setw(11) << getAmountString() << " | " << getCategory() << endl;
+    cout << getDateString() << " | " << setw(12) << getAmountString() << " | " << getCategory() << endl;
+}
+void Transaction::displayInTable() {
+    cout << setw(4) << getDayOfMonth() << " | " << setw(12) << getAmountString() << " | " << getCategory() << endl;
 }
 
 /** Create new income of amount dollars from a set source with today's date 

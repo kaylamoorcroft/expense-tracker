@@ -7,6 +7,7 @@
 using namespace std;
 
 // https://www.geeksforgeeks.org/cpp/how-to-handle-wrong-data-type-input-in-cpp/
+// helper function to validate int/double input 
 template <typename T>
 void getValidNumInput(T& val, string prompt, T lower = -1, T upper = -1) {
     bool validInput = false;
@@ -189,10 +190,32 @@ set<Transaction*, TransactionRawPtrComparator> Spreadsheet::filterMonth(int year
 }
 /** display all entries in a table format */
 void Spreadsheet::display() {
-    cout << "   Date    | Amount      |  Tag" << endl;
-    cout << "-----------|-------------|---------" << endl;
+    int prevYear = 1900; int curYear = 1900;
+    string prevMonth = ""; string curMonth = "";
+    bool yearJump = true;
     for (auto it = entries_.begin(); it != entries_.end(); ++it) {
-        (*it)->display(); 
+        curMonth = (*it)->getMonthName();
+        curYear = (*it)->getYear();
+        yearJump = curYear != prevYear;
+
+        // display year header
+        if (yearJump) {
+            prevYear = curYear;
+            cout << endl;
+            cout << "-----------------------------------" << endl;
+            cout << setw(20) << curYear << endl;
+        }
+        // display month header
+        if ((curMonth != prevMonth) || yearJump) {
+            prevMonth = curMonth;
+            cout << "-----------------------------------" << endl;
+            cout << setw(35) << curMonth << endl;
+            cout << "-----------------------------------" << endl;
+            cout << " Day |    Amount    |  Tag " << endl;
+            cout << "-----|--------------|--------------" << endl;
+        }
+        // display transaction
+        (*it)->displayInTable(); 
     }
 }
 
