@@ -49,24 +49,37 @@ bool Spreadsheet::addEntryFromUser() {
     int year, month, day;
     double amount; 
     string category;
-    char type;
+    char type, dateType;
     
     cout << "\nChoose Income (i) or Expense (e) > "; cin >> type;
-    while (type != 'i' && type != 'e') {
+    while (type != 'i' && type != 'e') { // income or expense
         cout << "Invalid input... please try again > "; cin >> type;
     }
-    cout << "Please enter  date: \n"; 
-    getValidNumInput(year, "\tYear > ", 1900);
-    getValidNumInput(month, "\tMonth > ", 1, 12);
-    getValidNumInput(day, "\tDay > ", 1, 31);
+    cout << "Choose to use today's date (t) or enter custom date (c) > "; 
+    cin >> dateType;
+    while (dateType != 't' && dateType != 'c') { // custom to default date
+        cout << "Invalid input... please try again > "; cin >> dateType;
+    }
+    // custom date
+    if (dateType == 'c') {
+        getValidNumInput(year, "\tYear > ", 1900);
+        getValidNumInput(month, "\tMonth > ", 1, 12);
+        getValidNumInput(day, "\tDay > ", 1, 31);
+    }
     getValidNumInput(amount, "Please enter amount spent / received > ", 0.0);
     cout << "Please enter category > "; getline(cin >> ws, category); // read line with spaces and skip leading whitespace
-    
-    if (type == 'e') {
-        return addEntry(make_unique<Expense>(year, month, day, -amount, category));
+
+    if (type == 'e') { // expense
+        if (dateType == 't') // default date
+            return addEntry(make_unique<Expense>(-amount, category));
+        else // custom date
+            return addEntry(make_unique<Expense>(year, month, day, -amount, category));
     }
-    else {
-        return addEntry(make_unique<Income>(year, month, day, amount, category));
+    else { // income
+        if (dateType == 't') // default date
+            return addEntry(make_unique<Income>(amount, category));
+        else // custom date
+            return addEntry(make_unique<Income>(year, month, day, amount, category));
     }
 }
 // remove entry
