@@ -15,7 +15,7 @@ void displayMenu() {
     cout << "3) Add transaction" << endl;
     cout << "4) Delete transaction" << endl;
     cout << "5) Edit transaction" << endl;
-    cout << "6) Get transaction" << endl;
+    cout << "6) Get transactions from date" << endl;
     cout << "7) Display spreadsheet" << endl;
     cout << "8) Get stats" << endl;
     cout << "\nPlease select an operation (enter 0 to quit) > ";
@@ -26,6 +26,7 @@ int main() {
     Spreadsheet sheet;
     int option;
     string filename;
+    int year, month, day;
     do {
         displayMenu();
         Utils::getValidNumInput(option, "");
@@ -70,8 +71,12 @@ int main() {
                     cout << "\nError updating entry..." << endl;
                 }
                 break;
-            case 6: // get
-                sheet.getEntry();
+            case 6: // get by date
+                cout << "Please enter date: \n"; 
+                Utils::getValidNumInput(year, "\tYear > ", 1900);
+                Utils::getValidNumInput(month, "\tMonth > ", 1, 12);
+                Utils::getValidNumInput(day, "\tDay > ", 1, 31);
+                sheet.printEntriesFromDate(year, month, day);
                 break;
             case 7: // display
                 sheet.display();

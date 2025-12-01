@@ -77,6 +77,7 @@ string Transaction::toString() {
 void Transaction::display() {
     cout << getDateString() << " | " << setw(12) << getAmountString() << " | " << getCategory() << endl;
 }
+/** Display the amount, day of month and category of the expense formatted for the Spreadsheet table*/
 void Transaction::displayInTable() {
     cout << setw(4) << getDayOfMonth() << " | " << setw(12) << getAmountString() << " | " << getCategory() << endl;
 }

@@ -127,7 +127,6 @@ Transaction* Spreadsheet::getEntry() {
     Utils::getValidNumInput(day, "\tDay > ", 1, 31);
     set<Transaction*, TransactionRawPtrComparator> filtered = printEntriesFromDate(year, month, day);
     if (filtered.size() == 0) { // no entries - exit
-        cout << "No entries found for " << year << "/" << month << "/" << day << endl;
         return nullptr;
     }
     if (filtered.size() == 1) { // get only entry
@@ -148,13 +147,21 @@ Transaction* Spreadsheet::getEntry() {
 set<Transaction*, TransactionRawPtrComparator> Spreadsheet::printEntriesFromDate(int year, int month, int day) {
     set<Transaction*, TransactionRawPtrComparator> filtered;
     int counter = 1;
+
     for (auto it = entries_.begin(); it != entries_.end(); ++it) {
         if ((*it)->datesAreEqual(year, month, day)) {
+            if (counter == 1) { // print header before first entry 
+                cout << "\nTransactions on " << year << "/" << month << "/" << day << ":" << endl;
+                cout << "--------------------------" << endl;
+            }
             cout << "(" << counter << ") ";
-            (*it)->display();
+            cout << setw(12) << (*it)->getAmountString() << " | " << (*it)->getCategory() << endl;
             filtered.insert(it->get()); // insert raw pointer (not unique ptr)
             counter++;
         }
+    }
+    if (filtered.size() == 0) { // no entries
+        cout << "\nNo entries found for " << year << "/" << month << "/" << day << endl;
     }
     return filtered;
 }
