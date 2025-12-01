@@ -361,7 +361,6 @@ void Spreadsheet::calculateStats(){
         }
     }
 
-
     cout << "\n" << setw(24) << "SUMMARY for " << Utils::getMonthName(month) << " " << year << "\n" << endl;
     cout << "   Total Income  |  Total Expense  |   Cashflow" << endl;
     cout << "-----------------|-----------------|--------------" << endl;
@@ -371,5 +370,7 @@ void Spreadsheet::calculateStats(){
         << setw(12) << Utils::formatMoney(totalExpense) << setw(6) << "|"
         << setw(12) << Utils::formatMoney(cashflow) << endl;
 
-    cout << largestExpense << " is the most expensive category!!" << endl;
+    cout << "\n\nCategory with the highest expenses:" << endl;
+    cout << "-----------------------------------" << endl;
+    cout << largestExpense << ": " << Utils::formatMoney(currentLargest) << endl;
 }
