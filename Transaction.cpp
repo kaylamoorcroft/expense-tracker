@@ -157,7 +157,3 @@ double Transaction::getAmount(){
 bool TransactionComparator::operator()(const unique_ptr<Transaction>& t1, const unique_ptr<Transaction>& t2) const {
     return *t1 < *t2; // dereference to compare actual Transaction objects
 }
-
-bool TransactionRawPtrComparator::operator()(const Transaction* t1, const Transaction* t2) const {
-    return t1 < t2;
-}

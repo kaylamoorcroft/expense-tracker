@@ -242,6 +242,9 @@ unique_ptr<Transaction> Spreadsheet::parseRecord(char* record) {
     }
 }
 
+//https://www.geeksforgeeks.org/cpp/convert-string-char-array-cpp/
+//https://www.geeksforgeeks.org/cpp/csv-file-management-using-c/
+
 //read csv file, convert string records into Transaction objects and add Entries
 void Spreadsheet::importFile(string filename){
     entries_.clear(); // clear existing file load

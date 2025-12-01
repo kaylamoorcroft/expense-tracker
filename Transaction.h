@@ -66,6 +66,3 @@ public:
 struct TransactionComparator {
     bool operator()(const unique_ptr<Transaction>& t1, const unique_ptr<Transaction>& t2) const;
 };
-struct TransactionRawPtrComparator {
-    bool operator()(const Transaction* t1, const Transaction* t2) const;
-};

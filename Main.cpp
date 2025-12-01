@@ -4,10 +4,6 @@
 
 using namespace std;
 
-// main will include summary, import, export functions
-//https://www.geeksforgeeks.org/cpp/convert-string-char-array-cpp/
-// https://www.geeksforgeeks.org/cpp/csv-file-management-using-c/
-
 void displayMenu() {
     cout << "\n-------- MENU --------" << endl;
     cout << "1) Load file" << endl;
