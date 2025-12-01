@@ -10,8 +10,8 @@ public:
     bool deleteEntry();
     bool updateEntry();
     Transaction* getEntry();
-    set<Transaction*, TransactionRawPtrComparator> printEntriesFromDate(int year, int month, int day);
-    set<Transaction*, TransactionRawPtrComparator> filterMonth(int year, int month);
+    vector<Transaction*> printEntriesFromDate(int year, int month, int day);
+    vector<Transaction*> filterMonth(int year, int month);
     void display();
     unique_ptr<Transaction> parseRecord(char* record);
     void importFile(string filename);

@@ -128,7 +128,7 @@ Transaction* Spreadsheet::getEntry() {
     Utils::getValidNumInput(year, "\tYear > ", 1900);
     Utils::getValidNumInput(month, "\tMonth > ", 1, 12);
     Utils::getValidNumInput(day, "\tDay > ", 1, 31);
-    set<Transaction*, TransactionRawPtrComparator> filtered = printEntriesFromDate(year, month, day);
+    vector<Transaction*> filtered = printEntriesFromDate(year, month, day);
     if (filtered.size() == 0) { // no entries - exit
         return nullptr;
     }
@@ -137,18 +137,14 @@ Transaction* Spreadsheet::getEntry() {
     }
     int num; 
     Utils::getValidNumInput(num, "Select entry number > ");
-    int i = 1;
-    for (Transaction* t : filtered) {
-        if (i == num) {
-            return t;
-        }
-        i++;
+    if (num > 0 && num <= (int)filtered.size()) {
+        return filtered.at(num - 1);
     }
     return nullptr;
 }
 // filter by date and print
-set<Transaction*, TransactionRawPtrComparator> Spreadsheet::printEntriesFromDate(int year, int month, int day) {
-    set<Transaction*, TransactionRawPtrComparator> filtered;
+vector<Transaction*> Spreadsheet::printEntriesFromDate(int year, int month, int day) {
+    vector<Transaction*> filtered;
     int counter = 1;
 
     for (auto it = entries_.begin(); it != entries_.end(); ++it) {
@@ -159,7 +155,7 @@ set<Transaction*, TransactionRawPtrComparator> Spreadsheet::printEntriesFromDate
             }
             cout << "(" << counter << ") ";
             cout << setw(12) << (*it)->getAmountString() << " | " << (*it)->getCategory() << endl;
-            filtered.insert(it->get()); // insert raw pointer (not unique ptr)
+            filtered.push_back(it->get()); // insert raw pointer (not unique ptr)
             counter++;
         }
     }
@@ -170,11 +166,11 @@ set<Transaction*, TransactionRawPtrComparator> Spreadsheet::printEntriesFromDate
 }
 
 // filter by date
-set<Transaction*, TransactionRawPtrComparator> Spreadsheet::filterMonth(int year, int month) {
-    set<Transaction*, TransactionRawPtrComparator> filtered;
+vector<Transaction*> Spreadsheet::filterMonth(int year, int month) {
+    vector<Transaction*> filtered;
     for (auto it = entries_.begin(); it != entries_.end(); ++it) {
         if ((*it)->monthsAreEqual(year, month)) {
-            filtered.insert(it->get()); // insert raw pointer (not unique ptr)
+            filtered.push_back(it->get()); // insert raw pointer (not unique ptr)
         }
     }
     return filtered;
@@ -306,7 +302,7 @@ void Spreadsheet::calculateStats(){
     Utils::getValidNumInput(month, "\tMonth > ", 1, 12);
 
     //filter entries by month
-    set<Transaction*, TransactionRawPtrComparator> monthEntries;
+    vector<Transaction*> monthEntries;
     monthEntries = filterMonth(year, month);
 
     double totalIncome, totalExpense, cashflow;
