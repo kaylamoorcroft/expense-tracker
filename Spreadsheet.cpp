@@ -10,6 +10,9 @@ using namespace std;
 
 // create new entry
 bool Spreadsheet::addEntry(unique_ptr<Transaction> entry) {
+    if (entry == nullptr) {
+        return false;
+    }
     return entries_.insert(std::move(entry)).second;
 }
 // add new entry through user input
@@ -199,7 +202,7 @@ void Spreadsheet::display() {
             cout << "-----------------------------------" << endl;
             cout << setw(35) << curMonth << endl;
             cout << "-----------------------------------" << endl;
-            cout << " Day |    Amount    |  Tag " << endl;
+            cout << " Day |    Amount    |  Category " << endl;
             cout << "-----|--------------|--------------" << endl;
         }
         // display transaction
@@ -209,6 +212,9 @@ void Spreadsheet::display() {
 
 // create new transaction by parsing record
 unique_ptr<Transaction> Spreadsheet::parseRecord(char* record) {
+    if (record != nullptr && *record == '\0') {
+        return nullptr;
+    }
     char *attribute = strtok(record, ",");
     int counter = 0;
     struct tm datetime;
