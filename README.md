@@ -38,6 +38,9 @@ Main
 ```
 
 ## Showcase
-![Menu](images/menu.png)
-![Spreadsheet](images/spreadsheet.png)
+**MENU:**  
+![Menu](images/menu.png)  
+**SPREADSHEET:**  
+![Spreadsheet](images/spreadsheet.png)  
+**STATS:**  
 ![Stats](images/stats.png)
