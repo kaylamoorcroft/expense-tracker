@@ -38,9 +38,9 @@ bool Spreadsheet::addEntryFromUser() {
 
     if (type == 'e') { // expense
         if (dateType == 't') // default date
-            return addEntry(make_unique<Expense>(-amount, category));
+            return addEntry(make_unique<Expense>(amount, category));
         else // custom date
-            return addEntry(make_unique<Expense>(year, month, day, -amount, category));
+            return addEntry(make_unique<Expense>(year, month, day, amount, category));
     }
     else { // income
         if (dateType == 't') // default date

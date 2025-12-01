@@ -22,7 +22,7 @@ string Utils::getMonthName(int monthNum) {
 string Utils::formatMoney(double amount) {
     stringstream ss;
     // use the system's native locale settings.
-    ss.imbue(locale(""));
+    ss.imbue(locale("en_CA.UTF-8"));
     ss << showbase << put_money(amount * 100); // amount in cents
     return ss.str();
 }
