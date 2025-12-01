@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iomanip>
 #include <locale>
+#include <map>
 #include "Spreadsheet.h"
 #include "Utils.h"
 
@@ -284,7 +285,7 @@ void Spreadsheet::exportFile(string filename){
     cout << "\nSaving " << filename << "..." << endl;
 }
 
-//calculate total income and total expense for a given month
+//calculate total income, total expense, cashflow, and largest expense category for a given month
 void Spreadsheet::calculateStats(){
     int year, month;
     cout << "Please enter year and month: \n"; 
@@ -312,6 +313,48 @@ void Spreadsheet::calculateStats(){
     //net profit or loss of a given month
     cashflow = totalIncome - (totalExpense * -1);
 
+        //set for all expense entries
+    set<Transaction*> expenseEntries;
+    for(Transaction* t : monthEntries){
+        if(t->getAmount() < 0){
+            expenseEntries.insert(t);
+        }
+    }
+
+    //create set of unique expense entry categories
+    set<string> categories;
+    for(Transaction* t : expenseEntries){
+        categories.insert(t->getCategory());
+    }
+
+    //create map to record each expense category and their correlated amounts
+    map<string, double> expense;
+
+    //fill expense map with keys (expense categories)
+    for(Transaction* t : expenseEntries){
+        expense.insert({t->getCategory(), 0});
+    }
+
+    //fill expense map with values: add amounts from each repeated category
+    for(string s : categories){
+        for(Transaction* t : expenseEntries){
+            if(t->getCategory() == s){
+                expense[s] = expense[s] + t->getAmount();
+            }
+        }
+    }
+
+    string largestExpense;
+    double currentLargest = 0;
+    //loop through expense map to find largest value
+    for (auto e: expense){
+        if (e.second < currentLargest){
+            currentLargest = e.second;
+            largestExpense = e.first;
+        }
+    }
+
+
     cout << "\n" << setw(24) << "SUMMARY for " << Utils::getMonthName(month) << " " << year << "\n" << endl;
     cout << "   Total Income  |  Total Expense  |   Cashflow" << endl;
     cout << "-----------------|-----------------|--------------" << endl;
@@ -320,4 +363,6 @@ void Spreadsheet::calculateStats(){
     cout << setw(12)<< Utils::formatMoney(totalIncome) << setw(6) << "|"
         << setw(12) << Utils::formatMoney(totalExpense) << setw(6) << "|"
         << setw(12) << Utils::formatMoney(cashflow) << endl;
+
+    cout << largestExpense << " is the most expensive category!!" << endl;
 }
