@@ -325,7 +325,7 @@ void Spreadsheet::calculateStats(){
     //net profit or loss of a given month
     cashflow = totalIncome - (totalExpense * -1);
 
-        //set for all expense entries
+    //set for all expense entries
     set<Transaction*> expenseEntries;
     for(Transaction* t : monthEntries){
         if(t->getAmount() < 0){
@@ -333,31 +333,22 @@ void Spreadsheet::calculateStats(){
         }
     }
 
-    //create set of unique expense entry categories
-    set<string> categories;
-    for(Transaction* t : expenseEntries){
-        categories.insert(t->getCategory());
-    }
-
-    //create map to record each expense category and their correlated amounts
+    string largestExpense;
+    double currentLargest = 0;
     map<string, double> expense;
 
-    //fill expense map with keys (expense categories)
+    // loop through expense set
+    // if key exists, update amount
+    // if not, insert new key with amount
     for(Transaction* t : expenseEntries){
-        expense.insert({t->getCategory(), 0});
-    }
-
-    //fill expense map with values: add amounts from each repeated category
-    for(string s : categories){
-        for(Transaction* t : expenseEntries){
-            if(t->getCategory() == s){
-                expense[s] = expense[s] + t->getAmount();
-            }
+        if (expense.count(t->getCategory()) > 0) { // key exists
+            expense[t->getCategory()] += t->getAmount();
+        }
+        else {
+            expense.insert({t->getCategory(), t->getAmount()});
         }
     }
 
-    string largestExpense;
-    double currentLargest = 0;
     //loop through expense map to find largest value
     for (auto e: expense){
         if (e.second < currentLargest){
